@@ -7,6 +7,14 @@ from scipy import ndimage
 import numpy as np
 
 def get_lidar_subset_byextent(path_to_lidar_folder, layerextent, output_folder):
+    """
+    Subset lidar tiles by extent
+    :param path_to_lidar_folder: Folder with Lidar tiles from PNOA
+    :param layerextent: Layer extent to subset with
+    :param output_folder: output folder
+    :return:
+    """
+
     lxmin, lxmax, lymin, lymax = layerextent.split(",")
     lxmin = float(lxmin) - 100
     lxmax = float(lxmax) + 100
@@ -99,6 +107,15 @@ dirección: https://pdal.io/index.html
 
 
 def tile_lidar_bash(folder_with_las, output_folder, spacing, buffer=None):
+    """
+    Tile lidar tiles in smaller tiles with bash
+    :param folder_with_las: folder with Lidar tiles
+    :param output_folder: output folder
+    :param spacing: spacing of the new tiles
+    :param buffer: extra distance to be considered
+    :return:
+    """
+
     if os.path.exists(output_folder) is False:
         os.mkdir(output_folder)
 
@@ -172,6 +189,12 @@ dirección: https://pdal.io/index.html
 #     print(count)
 
 def decimate_folder(input_folder, output_folder):
+    """
+    Decimate lidar tiles inside a folder
+    :param input_folder:
+    :param output_folder:
+    :return:
+    """
     os.makedirs(output_folder, exist_ok=True)
     lasinfile = os.listdir(input_folder)
     dict_inout = list(map(lambda x: {f"{input_folder}/{x}": f"{output_folder}/dec_{x[7:]}"},
@@ -193,6 +216,13 @@ def decimate_folder(input_folder, output_folder):
 
 
 def decimate_all_folders(las_tiles, output_folder, input_folder):
+    """
+    Decimate all the folders with tiles
+    :param las_tiles:
+    :param output_folder:
+    :param input_folder:
+    :return:
+    """
     coordinates_folders = os.listdir(las_tiles)
     dict_inout = list(map(lambda x, y, z: {f"{las_tiles}/{x}/{y}": f"{las_tiles}/{x}/{z}"},
                           coordinates_folders,
@@ -260,6 +290,12 @@ dirección: https://pdal.io/index.html
 #     print(count)
 
 def remove_overlay_points_folder(tiles_folder, output_folder):
+    """
+    Remove overlay points from Lidar tiles inside a folder
+    :param tiles_folder:
+    :param output_folder:
+    :return:
+    """
     for folder in os.listdir(tiles_folder):
         lasfolder = f"{tiles_folder}/{folder}"
         if os.path.exists(f"{lasfolder}/{output_folder}") is False:
@@ -274,6 +310,12 @@ def remove_overlay_points_folder(tiles_folder, output_folder):
 
 
 def remove_noise(lasfile, outputlas):
+    """
+    Remove noise points
+    :param lasfile:
+    :param outputlas:
+    :return:
+    """
     creating_json = {
         "pipeline": [
             {
@@ -307,6 +349,12 @@ def remove_noise(lasfile, outputlas):
 #     print(count)
 
 def remove_noise_folder(tiles_folder, output_folder):
+    """
+    remove noise points from Lidar tiles inside a folder
+    :param tiles_folder:
+    :param output_folder:
+    :return:
+    """
     for folder in os.listdir(tiles_folder):
         lasfolder = f"{tiles_folder}/{folder}" # in coordinate tiles folder
         if os.path.exists(f"{lasfolder}/{output_folder}") is False:
@@ -328,6 +376,13 @@ def remove_noise_folder(tiles_folder, output_folder):
 
 
 def DEMonizator(lasfile, outputfile, resolution=1000):
+    """
+    Creates a DEM from a las file
+    :param lasfile:
+    :param outputfile:
+    :param resolution:
+    :return:
+    """
     creating_json = {
         "pipeline": [
             {
@@ -482,6 +537,14 @@ dirección: https://pdal.io/index.html
 
 
 def surfaces_to_folder(folder, surface="DEM", name_clean="clean", resolution=5):
+    """
+    Creates different surface raster from LiDAR tiles inside a folder
+    :param folder:
+    :param surface:
+    :param name_clean:
+    :param resolution:
+    :return:
+    """
     for f in os.listdir(folder):
         lasfolder = f"{folder}/{f}/{name_clean}"
         output_folder = f"{folder}/{f}/{surface}"
@@ -601,6 +664,12 @@ def FCC(input, output, window = 20, breakpoint = 0.01):
 
 
 def FCC_to_folders(las_tiles, covers):
+    """
+    Cover Fracition Percentage from LiDAR tiles inside a folder
+    :param las_tiles:
+    :param covers:
+    :return:
+    """
     def assigning_input_folder(a):
         if a == "TCC":
             out = "TCH"
@@ -642,6 +711,17 @@ def FCC_to_folders(las_tiles, covers):
     return (0)
 
 def metrics(lasfile, outputfile, metric, returns="veg4+veg5", position=None, resolution=5, radius=56.41896):
+    """
+    Creates metrics images from las files.
+    :param lasfile:
+    :param outputfile:
+    :param metric: Metric desired
+    :param returns: Specify the returns to take into account ("veg4", "veg5", "veg4+veg5" or "veg3+veg4+veg5")
+    :param position: Specifiy a postition (last, first, etc)
+    :param resolution: resolution of the output raster image
+    :param radius: search radius
+    :return:
+    """
     if metric not in ["min", "max", "count", "stdev"]:
         return(1)
 
@@ -724,6 +804,12 @@ def metrics(lasfile, outputfile, metric, returns="veg4+veg5", position=None, res
 
 
 def metric_to_folder(input_folder, output_folder):
+    """
+    Apply metric folders
+    :param input_folder:
+    :param output_folder:
+    :return:
+    """
     def out_name(name):
         a = name.split("/")
         b = a[len(a) - 1]
@@ -760,6 +846,13 @@ def metric_to_folder(input_folder, output_folder):
 
 
 def metrics_all_folders(las_tiles, metricas, input_folder="clean"):
+    """
+    Apply metrics to all the folders
+    :param las_tiles:
+    :param metricas:
+    :param input_folder:
+    :return:
+    """
     coordinates_folder = os.listdir(las_tiles)
 
     dict_inout = []
